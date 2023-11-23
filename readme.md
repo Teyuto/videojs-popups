@@ -40,7 +40,8 @@ player.popups([
     content: 'Your awesome popup',
     startSeconds: 2,
     position: 'center'
-},
+}
+]},
 ```
 
 Make sure to replace `'my-video'` with your actual video player ID.
