@@ -1,0 +1,57 @@
+.videojs-popup-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  font-size:14px;
+  cursor: pointer;
+}
+
+.videojs-popup-container.dark{
+  background-color: rgba(0, 0, 0, 0.8);
+  padding:15px;
+  border-radius: 5px;
+  color: white; 
+  font-weight: 600;
+}
+.videojs-popup-container.light{
+  background-color: rgba(255, 255, 255, 0.8);
+  padding:15px;
+  border-radius: 5px;
+  color: black; 
+  font-weight: 600;
+}
+
+.videojs-popup-center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.videojs-popup-bottom-left {
+  bottom: 10px;
+  left: 10px;
+}
+
+.videojs-popup-top-left {
+  top: 10px;
+  left: 10px;
+}
+
+.videojs-popup-top-right {
+  top: 10px;
+  right: 10px;
+}
+
+.videojs-popup-bottom-right {
+  bottom: 10px;
+  right: 10px;
+}
+
+.videojs-popup-marker {
+  position: absolute;
+  width: 5px;
+  height: 100%;
+  pointer-events: none;
+}

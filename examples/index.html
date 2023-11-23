@@ -1,0 +1,75 @@
+<head>
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet"/>
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/gh/Teyuto/videojs-popups@main/src/videojs-popups.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/gh/Teyuto/videojs-popups@main/src/videojs-popups.js"></script>
+</head>
+
+<body>
+    <video
+        id="my-video"
+        class="video-js"
+        controls="controls"
+        preload="auto"
+        width="640"
+        height="264"
+        data-setup="{}">
+        <source
+            src="https://streams.teyuto.tv/videos/113004_1-41811/master.m3u8"
+            type="application/x-mpegURL"/>
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web
+            browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a >
+        </p>
+    </video>
+    <script>
+        var options = {};
+
+        var player = videojs('my-video', options, function onPlayerReady() {
+            videojs.log('Your player is ready!');
+        });
+
+        player.popups([
+        {
+            content: 'Your awesome popup',
+            showMarkers: true,
+            stopAtPopup: false,
+            startSeconds: 2,
+            duration: 5,
+            position: 'center',
+            theme: 'dark',
+            markerColor: 'yellow',
+            jumpSeconds: 10,
+            onClick: function() {
+                console.log('Popup 1 clicked!');
+            },
+            onHover: function() {
+                console.log('Popup 1 hovered!');
+            }
+        },
+        {
+            content: 'Another popup',
+            showMarkers: true,
+            stopAtPopup: true,
+            startSeconds: 20,
+            duration: 5,
+            position: 'top-right',
+            jumpSeconds: -5
+        },
+        {
+            content: '<p><span style="color:red;">Another</span> popup</p>',
+            showMarkers: true,
+            stopAtPopup: true,
+            startSeconds: 30,
+            duration: 5,
+            position: '10,70',
+            jumpSeconds: -5
+        }
+        // Add more popups as needed
+        ]);
+            
+    </script>
+
+</body>
