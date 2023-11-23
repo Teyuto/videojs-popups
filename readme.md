@@ -22,8 +22,8 @@ Include the Video.js library and the `videojs-popups` files in your HTML file:
 <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
 
 <!-- Video.js Popups plugin -->
-<link href="../src/videojs-popups.css" rel="stylesheet"/>
-<script src="../src/videojs-popups.js"></script>
+ <link href="https://cdn.jsdelivr.net/gh/Teyuto/videojs-popups@main/src/videojs-popups.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/gh/Teyuto/videojs-popups@main/src/videojs-popups.js"></script>
 ```
 
 ### Usage
