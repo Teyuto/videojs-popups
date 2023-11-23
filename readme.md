@@ -75,7 +75,7 @@ player.popups([
 
 Each popup in the `player.popups` array can have the following options:
 
-- `html`: HTML content of the popup.
+- `content`: HTML content of the popup.
 - `showMarkers`: Display markers on the progress bar.
 - `stopAtPopup`: Pause the video when the popup is displayed.
 - `startSeconds`: Start time of the popup in seconds.
