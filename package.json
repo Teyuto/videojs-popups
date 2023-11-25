@@ -2,7 +2,7 @@
     "name": "@teyuto/videojs-popups",
     "author": "Teyuto",
     "license": "MIT",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Video.js Popups Plugin",
     "repository": {
       "type": "git",

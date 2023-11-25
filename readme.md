@@ -76,13 +76,13 @@ popupsManager.add([
 ]);
 
 // Example: Remove all popups
-player.popups.removeAll();
+popupsManager.removeAll();
 
 // Example: Remove a popup by ID
-player.popups.removeById('popup-1');
+popupsManager.removeById('popup-1');
 
 // Retrieve and log the list of all active popups
-var activePopups = player.popups.list();
+var activePopups = popupsManager.list();
 ```
 
 **Note for Live Streams:**
@@ -98,6 +98,7 @@ Combine the `add` and `remove` functions with WebSocket communication to create 
 
 Each popup in the `player.popups` array can have the following options:
 
+- `id`: Popup identifier
 - `content`: HTML content of the popup.
 - `showMarker`: Display markers on the progress bar.
 - `stopAtPopup`: Pause the video when the popup is displayed.
