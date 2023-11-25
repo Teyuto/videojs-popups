@@ -54,7 +54,7 @@ var popupsManager = player.popups();
 
 popupsManager.add([
     {
-        id: 'popup-1'
+        id: 'popup-1',
         content: 'Your awesome popup',
         showMarker: true,
         stopAtPopup: false,
