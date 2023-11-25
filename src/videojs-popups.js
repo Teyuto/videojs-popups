@@ -1,86 +1,188 @@
 videojs.registerPlugin('popups', function(options) {
-    var player = this;
-  
-    options = options || [];
-  
-    options.forEach(function(popup) {
+  var player = this;
+  var activePopups = [];
+  var initialized = false;
+
+  options = options || [];
+
+  function addPopup(popup) {
+    return new Promise((resolve) => {
+      if (activePopups.some(item => item.startSeconds === popup.startSeconds)) {
+        resolve();
+        return;
+      }
+
+      var popupContainer = createPopupContainer(popup);
       var marker;
-      var popupContent = popup.content || '';
-      var showMarkers = popup.showMarkers || false;
-      var stopAtPopup = popup.stopAtPopup || false;
-      var startSeconds = popup.startSeconds || 0;
-      var duration = popup.duration || 5;
-      var theme = popup.theme || 'light';
-      var markerColor = popup.markerColor || 'red';
-      var jumpSeconds = popup.jumpSeconds || 0;
-      var onClick = popup.onClick || function() {};
-      var onHover = popup.onHover || function() {};
-  
-      var popupContainer = document.createElement('div');
-      
-      popupContainer.className = 'videojs-popup-container '+theme+' ';
-  
-      if (popup.position) {
-        if (popup.position.includes(',')) {
-          var [positionTopPercentage, positionLeftPercentage] = popup.position.split(',').map(parseFloat);
-  
-          if (!isNaN(positionTopPercentage) && !isNaN(positionLeftPercentage)) {
-            popupContainer.style.top = positionTopPercentage + '%';
-            popupContainer.style.left = positionLeftPercentage + '%';
+
+      if (popup.showMarker) {
+        player.one('loadedmetadata', function() {
+          initialized = true;
+          marker = addMarker(popup);
+          pushToActivePopups();
+          initialized = true;
+        });
+
+        marker = addMarker(popup);
+      }
+
+      pushToActivePopups();
+
+      function showPopup() {
+        var isPopupStillActive = activePopups.some(item => item.popupContainer === popupContainer);
+
+        if (isPopupStillActive) {
+          player.el().appendChild(popupContainer);
+
+          if (popup.stopAtPopup && !popupContainer.semaphore && isPopupStillActive) {
+            player.pause();
+            popupContainer.semaphore = true;
           }
+
         } else {
-          popupContainer.classList.add('videojs-popup-' + popup.position);
+          removePopup(popupContainer, marker);
         }
       }
-  
-      popupContainer.innerHTML = popupContent;
-  
-      popupContainer.addEventListener('mouseenter', onHover);
-      popupContainer.addEventListener('click', function() {
-        onClick();
-        player.currentTime(player.currentTime() + jumpSeconds);
-        player.play();
-      });
-  
-      if (showMarkers) {
-        var marker;
-  
-        player.one('loadedmetadata', function() {
-          var markerPosition = (startSeconds / player.duration()) * 100;
-  
-          marker = document.createElement('div');
-          marker.className = 'videojs-popup-marker';
-          player.controlBar.progressControl.seekBar.el().appendChild(marker);
-  
-          marker.style.left = markerPosition + '%';
-          marker.style.backgroundColor = markerColor;
-          marker.style.width = markerWidth + 'px';
-        });
-      }
-  
-      let stopSem = false;
+
       player.on('timeupdate', function() {
         var currentTime = player.currentTime();
-  
-        if (currentTime >= startSeconds && currentTime <= startSeconds + duration) {
+
+        if (currentTime >= popup.startSeconds && currentTime <= popup.startSeconds + popup.duration) {
           showPopup();
-          if (stopAtPopup && !stopSem) {
+
+          if (popup.stopAtPopup && !popupContainer.semaphore) {
             player.pause();
-            stopSem = true;
+            popupContainer.semaphore = true;
           }
+
+          if (popup.showOnce) {
+            if (popup.duration) {
+              setTimeout(function () {
+                removePopup(popupContainer, marker);
+              }, popup.duration * 1000);
+            }
+          } else {
+            if (popup.duration) {
+              setTimeout(function () {
+                removePopup(popupContainer);
+              }, popup.duration * 1000);
+            }
+          }
+
         } else {
-          hidePopup();
+          if (!popup.startSeconds) {
+            showPopup();
+            if (popup.duration) {
+              setTimeout(function () {
+                removePopup(popupContainer);
+              }, popup.duration * 1000);
+            }
+          }
         }
       });
-  
-      function showPopup() {
-        player.el().appendChild(popupContainer);
+
+      function addMarker(popup) {
+        if (player.duration()) {
+          var markerPosition = (popup.startSeconds / player.duration()) * 100;
+          var newMarker = document.createElement('div');
+          newMarker.className = 'videojs-popup-marker';
+          player.controlBar.progressControl.seekBar.el().appendChild(newMarker);
+
+          newMarker.style.left = markerPosition + '%';
+          newMarker.style.backgroundColor = popup.markerColor || 'red';
+          var markerWidth = 5;
+          newMarker.style.width = markerWidth + 'px';
+
+          return newMarker;
+        }
       }
-  
-      function hidePopup() {
-        if (popupContainer.parentNode) {
-          popupContainer.parentNode.removeChild(popupContainer);
+
+      function pushToActivePopups() {
+        if (initialized == true) {
+          activePopups.push({ id: popup.id, content: popup.content, popupContainer, marker, startSeconds: popup.startSeconds, duration: popup.duration });
+          resolve();
         }
       }
     });
-  });
+  }
+
+  function createPopupContainer(popup) {
+    var popupContent = popup.content || '';
+    var popupId = popup.id || 'popup-' + Date.now();
+    var popupContainer = document.createElement('div');
+
+    popupContainer.id = popupId;
+    popupContainer.className = 'videojs-popup-container ' + (popup.theme || 'light') + ' ';
+
+    if (popup.position) {
+      if (popup.position.includes(',')) {
+        var [positionTopPercentage, positionLeftPercentage] = popup.position.split(',').map(parseFloat);
+
+        if (!isNaN(positionTopPercentage) && !isNaN(positionLeftPercentage)) {
+          popupContainer.style.top = positionTopPercentage + '%';
+          popupContainer.style.left = positionLeftPercentage + '%';
+        }
+      } else {
+        popupContainer.classList.add('videojs-popup-' + popup.position);
+      }
+    }
+
+    popupContainer.innerHTML = popupContent;
+
+    popupContainer.addEventListener('mouseenter', popup.onHover || function() {});
+    popupContainer.addEventListener('click', function() {
+      (popup.onClick || function() {})();
+      player.currentTime(popup.startSeconds + (popup.jumpSeconds || 0));
+      player.play();
+      
+      removePopup(popupContainer);
+    });
+
+    return popupContainer;
+  }
+
+  function removeAllPopups() {
+    while (activePopups.length > 0) {
+      const { popupContainer, marker } = activePopups.pop();
+      removePopup(popupContainer, marker);
+    }
+  }
+
+  function removePopup(popupContainer, marker) {
+    if (marker && marker.parentNode) {
+      marker.parentNode.removeChild(marker);
+    }
+
+    if (popupContainer && popupContainer.parentNode) {
+      popupContainer.parentNode.removeChild(popupContainer);
+    }
+
+    activePopups = activePopups.filter(item => item.popupContainer !== popupContainer);
+
+    popupContainer = null;
+    marker = null;
+  }
+
+  return {
+    add: function(popupArray) {
+      if (Array.isArray(popupArray)) {
+        popupArray.forEach(function(popup) {
+          addPopup(popup);
+        });
+      } else {
+        addPopup(popupArray);
+      }
+    },
+    removeAll: removeAllPopups,
+    removePopup: removePopup,
+    removeById: function(id) {
+      const popupToRemove = activePopups.find(item => item.popupContainer.id === id);
+      if (popupToRemove) {
+        removePopup(popupToRemove.popupContainer, popupToRemove.marker);
+      }
+    },
+    list: function() {
+      return activePopups;
+    }
+  };
+});
