@@ -49,10 +49,14 @@ Make sure to replace `'my-video'` with your actual video player ID.
 ### Extended usage
 ```javascript
 // Add Video.js Popups Plugin
-player.popups([
+
+var popupsManager = player.popups();
+
+popupsManager.add([
     {
+        id: 'popup-1'
         content: 'Your awesome popup',
-        showMarkers: true,
+        showMarker: true,
         stopAtPopup: false,
         startSeconds: 2,
         duration: 5,
@@ -60,6 +64,7 @@ player.popups([
         theme: 'dark',
         markerColor: 'yellow',
         jumpSeconds: 10,
+        showOnce: false,
         onClick: function() {
             console.log('Popup clicked!');
         },
@@ -69,14 +74,32 @@ player.popups([
     },
     // Add more popups as needed
 ]);
+
+// Example: Remove all popups
+player.popups.removeAll();
+
+// Example: Remove a popup by ID
+player.popups.removeById('popup-1');
+
+// Retrieve and log the list of all active popups
+var activePopups = player.popups.list();
 ```
+
+**Note for Live Streams:**
+
+If the plugin is used for live video streams, *it is not necessary* to specify `startSeconds` in the popup options. Additionally, it is advisable to set `showMarker` to `false` for a cleaner experience.
+
+**Real-time Popup Updates:**
+
+Combine the `add` and `remove` functions with WebSocket communication to create real-time popups. An exemplary use case includes showcasing products in real-time during a live shopping event.
+
 
 ## Options
 
 Each popup in the `player.popups` array can have the following options:
 
 - `content`: HTML content of the popup.
-- `showMarkers`: Display markers on the progress bar.
+- `showMarker`: Display markers on the progress bar.
 - `stopAtPopup`: Pause the video when the popup is displayed.
 - `startSeconds`: Start time of the popup in seconds.
 - `duration`: Duration of the popup in seconds.
@@ -88,6 +111,7 @@ Each popup in the `player.popups` array can have the following options:
 - `theme`: Theme of the popup (e.g., 'dark', 'light' or custom css class).
 - `markerColor`: Color of the progress bar marker (default red).
 - `jumpSeconds`: Number of seconds to jump when clicking the popup marker.
+- `showOnce`: Destroy popup after first appearance
 - `onClick`: Function to execute when the popup is clicked.
 - `onHover`: Function to execute when the popup is hovered over.
 

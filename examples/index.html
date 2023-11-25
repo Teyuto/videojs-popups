@@ -31,10 +31,13 @@
             videojs.log('Your player is ready!');
         });
 
-        player.popups([
+        var popupsManager = player.popups();
+
+        popupsManager.add([
         {
+            id: 'test1',
             content: 'Your awesome popup',
-            showMarkers: true,
+            showMarker: true,
             stopAtPopup: false,
             startSeconds: 2,
             duration: 5,
@@ -42,6 +45,7 @@
             theme: 'dark',
             markerColor: 'yellow',
             jumpSeconds: 10,
+            showOnce: true,
             onClick: function() {
                 console.log('Popup 1 clicked!');
             },
@@ -50,8 +54,9 @@
             }
         },
         {
+            id: '2',
             content: 'Another popup',
-            showMarkers: true,
+            showMarker: true,
             stopAtPopup: true,
             startSeconds: 20,
             duration: 5,
@@ -59,8 +64,9 @@
             jumpSeconds: -5
         },
         {
+            id: '3',
             content: '<p><span style="color:red;">Another</span> popup</p>',
-            showMarkers: true,
+            showMarker: true,
             stopAtPopup: true,
             startSeconds: 30,
             duration: 5,
