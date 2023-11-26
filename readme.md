@@ -35,7 +35,10 @@ Initialize Video.js as you normally would and add the Video.js Popups Plugin:
 var player = videojs('my-video');
 
 // Add Video.js Popups Plugin
-player.popups([
+var popupsManager = player.popups();
+
+//Add popup
+popupsManager.add([
 {
     content: 'Your awesome popup',
     startSeconds: 2,
@@ -49,9 +52,9 @@ Make sure to replace `'my-video'` with your actual video player ID.
 ### Extended usage
 ```javascript
 // Add Video.js Popups Plugin
-
 var popupsManager = player.popups();
 
+//Add popups
 popupsManager.add([
     {
         id: 'popup-1',
