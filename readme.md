@@ -2,6 +2,8 @@
 
 The Video.js Popups Plugin enhances your Video.js player by allowing you to display interactive popups at specified timestamps during video playback. These popups can contain custom HTML content, offering a dynamic and engaging experience for your audience.
 
+![Screenshot](screenshot.png)
+
 ## Compatibility
 
 This plugin version is compatible with Video.js v8.x.
