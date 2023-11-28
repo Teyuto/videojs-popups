@@ -15,6 +15,8 @@ videojs.registerPlugin('popups', function(options) {
       var popupContainer = createPopupContainer(popup);
       var marker;
 
+      var isFirstRun = true;
+
       if (popup.showMarker) {
         player.one('loadedmetadata', function() {
           initialized = true;
@@ -29,6 +31,11 @@ videojs.registerPlugin('popups', function(options) {
       pushToActivePopups();
 
       function showPopup() {
+        if (isFirstRun && typeof popup.onStart === 'function') {
+          popup.onStart();
+          isFirstRun = false;
+        }
+
         var isPopupStillActive = activePopups.some(item => item.popupContainer === popupContainer);
 
         if (isPopupStillActive) {
@@ -38,9 +45,11 @@ videojs.registerPlugin('popups', function(options) {
             player.pause();
             popupContainer.semaphore = true;
           }
-
         } else {
-          removePopup(popupContainer, marker);
+          if(popup.showOnce){
+            marker=null;
+          }
+          removePopup(popupContainer, marker, popup);
         }
       }
 
@@ -58,13 +67,13 @@ videojs.registerPlugin('popups', function(options) {
           if (popup.showOnce) {
             if (popup.duration) {
               setTimeout(function () {
-                removePopup(popupContainer, marker);
+                removePopup(popupContainer, marker, popup);
               }, popup.duration * 1000);
             }
           } else {
             if (popup.duration) {
               setTimeout(function () {
-                removePopup(popupContainer);
+                removePopup(popupContainer, null, popup);
               }, popup.duration * 1000);
             }
           }
@@ -74,7 +83,7 @@ videojs.registerPlugin('popups', function(options) {
             showPopup();
             if (popup.duration) {
               setTimeout(function () {
-                removePopup(popupContainer);
+                removePopup(popupContainer, marker, popup);
               }, popup.duration * 1000);
             }
           }
@@ -134,8 +143,7 @@ videojs.registerPlugin('popups', function(options) {
       (popup.onClick || function() {})();
       player.currentTime(popup.startSeconds + (popup.jumpSeconds || 0));
       player.play();
-      
-      removePopup(popupContainer);
+  
     });
 
     return popupContainer;
@@ -144,20 +152,36 @@ videojs.registerPlugin('popups', function(options) {
   function removeAllPopups() {
     while (activePopups.length > 0) {
       const { popupContainer, marker } = activePopups.pop();
-      removePopup(popupContainer, marker);
+      removePopup(popupContainer, marker, null, 'direct');
     }
   }
 
-  function removePopup(popupContainer, marker) {
-    if (marker && marker.parentNode) {
-      marker.parentNode.removeChild(marker);
+  var onEndCalledIds = [];
+  function removePopup(popupContainer, marker, popup=null, action=null) {
+    if (player.paused()) {
+      return;
     }
-
+    
     if (popupContainer && popupContainer.parentNode) {
       popupContainer.parentNode.removeChild(popupContainer);
     }
 
-    activePopups = activePopups.filter(item => item.popupContainer !== popupContainer);
+    if (popup && typeof popup.onEnd === 'function' && !onEndCalledIds.includes(popup.id)) {
+      popup.onEnd();
+      onEndCalledIds.push(popup.id);
+    }
+
+    if((popup && popup.showOnce==true) || action=='direct'){
+      if (marker && marker.parentNode) {
+        marker.parentNode.removeChild(marker);
+      }
+      activePopups = activePopups.filter(item => item.popupContainer !== popupContainer);
+
+      const indexToRemove = onEndCalledIds.indexOf(activePopups.id);
+      if (indexToRemove !== -1) {
+        onEndCalledIds.splice(indexToRemove, 1);
+      }
+    }
 
     popupContainer = null;
     marker = null;
@@ -178,7 +202,7 @@ videojs.registerPlugin('popups', function(options) {
     removeById: function(id) {
       const popupToRemove = activePopups.find(item => item.popupContainer.id === id);
       if (popupToRemove) {
-        removePopup(popupToRemove.popupContainer, popupToRemove.marker);
+        removePopup(popupToRemove.popupContainer, popupToRemove.marker, null, 'direct');
       }
     },
     list: function() {

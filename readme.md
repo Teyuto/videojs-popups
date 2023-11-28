@@ -75,6 +75,12 @@ popupsManager.add([
         },
         onHover: function() {
             console.log('Popup hovered!');
+        },
+        onStart: function () {
+            console.log('Popup started!');
+        },
+        onEnd: function () {
+            console.log('Popup ended!');
         }
     },
     // Add more popups as needed
@@ -101,7 +107,7 @@ Combine the `add` and `remove` functions with WebSocket communication to create 
 
 ## Options
 
-Each popup in the `player.popups` array can have the following options:
+Each popup in the `popupsManager.add` array can have the following options:
 
 - `id`: Popup identifier
 - `content`: HTML content of the popup.
@@ -120,6 +126,8 @@ Each popup in the `player.popups` array can have the following options:
 - `showOnce`: Destroy popup after first appearance
 - `onClick`: Function to execute when the popup is clicked.
 - `onHover`: Function to execute when the popup is hovered over.
+- `onStart`: Function to be executed when the popup appears.
+- `onEnd`: Function to execute when the popup disappears.
 
 ## Example
 Check the provided HTML `examples/index.html` file for a working example.
