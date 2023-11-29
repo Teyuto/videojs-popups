@@ -51,6 +51,20 @@ videojs.registerPlugin('popups', function(options) {
           }
           removePopup(popupContainer, marker, popup);
         }
+
+        if (popup.duration && popup.progress) {
+          var remainingTime = Math.ceil(popup.duration - (player.currentTime() - popup.startSeconds));
+
+          var progress = 100 - ((remainingTime-1) / popup.duration) * 100;
+          progress = Math.max(0, Math.min(progress, 100));
+
+          var progressBar = document.createElement('div');
+          progressBar.className = 'popup-progress-bar';
+          progressBar.style.width = progress + '%';
+          progressBar.style.backgroundColor = popup.progressColor || '#00ff00';
+          popupContainer.appendChild(progressBar);
+        }
+
       }
 
       player.on('timeupdate', function() {

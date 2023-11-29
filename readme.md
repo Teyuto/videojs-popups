@@ -70,6 +70,8 @@ popupsManager.add([
         markerColor: 'yellow',
         jumpSeconds: 10,
         showOnce: false,
+        progress: true,
+        progressColor: 'yellow',
         onClick: function() {
             console.log('Popup clicked!');
         },
@@ -123,6 +125,9 @@ Each popup in the `popupsManager.add` array can have the following options:
 - `theme`: Theme of the popup (e.g., 'dark', 'light' or custom css class).
 - `markerColor`: Color of the progress bar marker (default red).
 - `jumpSeconds`: Number of seconds to jump when clicking the popup marker.
+- `showOnce`: Destroy popup after first appearance
+- `progress`: Display a progress bar on the popup
+- `progressColor`: Color of progress bar
 - `showOnce`: Destroy popup after first appearance
 - `onClick`: Function to execute when the popup is clicked.
 - `onHover`: Function to execute when the popup is hovered over.
