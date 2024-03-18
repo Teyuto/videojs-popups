@@ -17,16 +17,14 @@ videojs.registerPlugin('popups', function(options) {
 
       var isFirstRun = true;
 
-      if (popup.showMarker) {
-        player.one('loadedmetadata', function() {
-          initialized = true;
-          marker = addMarker(popup);
-          pushToActivePopups();
-          initialized = true;
-        });
+      player.one('loadedmetadata', function() {
+        initialized = true;
+        marker = addMarker(popup, popup.showMarker);
+        pushToActivePopups();
+        initialized = true;
+      });
 
-        marker = addMarker(popup);
-      }
+      marker = addMarker(popup, popup.showMarker);
 
       pushToActivePopups();
 
@@ -104,8 +102,8 @@ videojs.registerPlugin('popups', function(options) {
         }
       });
 
-      function addMarker(popup) {
-        if (player.duration()) {
+      function addMarker(popup, showMarker) {
+        if (player.duration() && showMarker) {
           var markerPosition = (popup.startSeconds / player.duration()) * 100;
           var newMarker = document.createElement('div');
           newMarker.className = 'videojs-popup-marker';
