@@ -5,6 +5,18 @@ videojs.registerPlugin('popups', function(options) {
 
   options = options || [];
 
+  addEmptyPopup();
+
+  function addEmptyPopup() {
+    addPopup({
+      id: 'empty-popup',
+      startSeconds: 0, 
+      duration: 0,
+      content: '',
+      showMarker: false
+    });
+  }
+
   function addPopup(popup) {
     return new Promise((resolve) => {
       if (activePopups.some(item => item.startSeconds === popup.startSeconds)) {
@@ -29,6 +41,9 @@ videojs.registerPlugin('popups', function(options) {
       pushToActivePopups();
 
       function showPopup() {
+        if (popup.id == 'empty-popup' || popup.duration == 0) {
+            return;
+        }
         if (isFirstRun && typeof popup.onStart === 'function') {
           popup.onStart();
           isFirstRun = false;
@@ -218,7 +233,7 @@ videojs.registerPlugin('popups', function(options) {
       }
     },
     list: function() {
-      return activePopups;
+        return activePopups.filter(item => item.id !== 'empty-popup');
     }
   };
 });
