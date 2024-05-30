@@ -98,6 +98,10 @@ videojs.registerPlugin('popups', function(options) {
             popupContainer.semaphore = true;
           }
 
+          if(popup.startSeconds == -1){
+            return false;
+          }
+
           if (popup.showOnce) {
             if (popup.duration) {
               setTimeout(function () {
