@@ -29,12 +29,19 @@ videojs.registerPlugin('popups', function(options) {
 
       var isFirstRun = true;
 
-      player.one('loadedmetadata', function() {
+      if(popup.startSeconds == -1){
         initialized = true;
         marker = addMarker(popup, popup.showMarker);
         pushToActivePopups();
         initialized = true;
-      });
+      }else{
+        player.one('loadedmetadata', function() {
+            initialized = true;
+            marker = addMarker(popup, popup.showMarker);
+            pushToActivePopups();
+            initialized = true;
+        });
+      }
 
       marker = addMarker(popup, popup.showMarker);
 
